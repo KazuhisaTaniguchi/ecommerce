@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import post_save
-from django.utils.text import slugify
+# from django.utils.text import slugify
 
 
 class ProductQuerySet(models.query.QuerySet):
@@ -81,8 +81,8 @@ post_save.connect(product_post_save_receiver, sender=Product)
 
 def image_upload_to(instance, filename):
     title = instance.product.title
-    slug = slugify(title)
-    return 'products/%s/%s' % (slug, filename)
+    # slug = slugify(title)
+    return 'products/%s/%s' % (title, filename)
 
 
 class ProductImage(models.Model):
