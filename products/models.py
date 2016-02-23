@@ -23,7 +23,7 @@ class Product(models.Model):
     title = models.CharField(max_length=120)
     description = models.TextField(blank=True, null=True)
     price = models.DecimalField(
-        decimal_places=2,
+        decimal_places=0,
         max_digits=20,
     )
     active = models.BooleanField(default=True)
@@ -41,7 +41,7 @@ class Variation(models.Model):
     product = models.ForeignKey(Product)
     title = models.CharField(max_length=120)
     price = models.DecimalField(
-        decimal_places=2,
+        decimal_places=0,
         max_digits=20,
     )
     sale_price = models.DecimalField(
