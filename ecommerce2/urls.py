@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('newsletter.urls', namespace='newsletter')),
     url(r'^accounts/', include('registration.backends.default.urls')),
+    url(r'^products/', include('products.urls', namespace='products')),
 ]
 # if settings.DEBUG:
 #     urlpatterns += static(
