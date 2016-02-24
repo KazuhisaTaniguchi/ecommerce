@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import post_save
 # from django.utils.text import slugify
+from django.utils.text import mark_safe
 
 
 class ProductQuerySet(models.query.QuerySet):
@@ -17,6 +18,19 @@ class ProductManager(models.Manager):
 
     def all(self, *args, **kwargs):
         return self.get_queryset().active()
+
+    def get_related(self, instance):
+        product_one = self.get_queryset().filter(
+            categories__in=instance.categories.all(),
+            # categories__in__exact=instance.categories.all(),
+        )
+        product_two = self.get_queryset().filter(
+            default=instance.default,
+        )
+        product_list = (product_one | product_two).exclude(
+            id=instance.id).distinct()
+
+        return product_list
 
 
 class Product(models.Model):
@@ -38,6 +52,12 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return reverse("products:product_detail", kwargs={"pk": self.pk})
+
+    def get_image_url(self):
+        img = self.productimage_set.first()
+        if img:
+            return img.image.url
+        return img
 
 
 class Variation(models.Model):
@@ -64,6 +84,17 @@ class Variation(models.Model):
             return self.sale_price
         else:
             return self.price
+
+    def get_html_price(self):
+        if self.sale_price is not None:
+            html_text = "<span class='sale-price'>%s </span>" % (
+                self.sale_price)
+
+            html_text += "<span class='og-price'>%s</span>" % (self.price)
+        else:
+            html_text = "<span class='price'>%s</span>" % (self.price)
+
+        return mark_safe(html_text)
 
     def get_absolute_url(self):
         return self.product.get_absolute_url()
@@ -109,3 +140,23 @@ class Category(models.Model):
     def get_absolute_url(self):
         return reverse(
             'categories:category_detail', kwargs={'slug': self.slug})
+
+
+def image_upload_to_featured(instance, filename):
+    title = instance.product.title
+    return 'products/%s/featured/%s' % (title, filename)
+
+
+class ProductFeatured(models.Model):
+    product = models.ForeignKey(Product)
+    image = models.ImageField(upload_to=image_upload_to_featured)
+    title = models.CharField(max_length=120, null=True, blank=True)
+    text = models.CharField(max_length=220, null=True, blank=True)
+    text_right = models.BooleanField(default=False)
+    text_css_color = models.CharField(max_length=6, null=True, blank=True)
+    show_price = models.BooleanField(default=False)
+    make_image_background = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.product.title

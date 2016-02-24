@@ -6,15 +6,19 @@ from .forms import (
     SingUpForm,
     ContactForm,
 )
+from products.models import ProductFeatured
 from .models import SingUp
 
 
 def home(request):
     title = 'Sign Up Now'
+    featured_image = ProductFeatured.objects.filter(
+        active=True).order_by('?').first()
     form = SingUpForm(request.POST or None)
     context = {
         'title': title,
         'form': form,
+        'featured_image': featured_image,
     }
 
     if form.is_valid():

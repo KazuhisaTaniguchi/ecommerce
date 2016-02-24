@@ -3,15 +3,14 @@
 {% block content %}
 <h3>{{ object.title }}</h3>
 
-<table class="table">
+<div class="row">
+  {% for product in products %}
+  <div class="col-xs-4">
+    {% include 'products/product_thumbnail.html' with object=product price='True' %}
+  </div>
 
-{% for product in products %}
-  <tr>
-    <td>
-      <a href="{{ product.get_absolute_url }}">{{ product.title }}</a>
-    </td>
-  </tr>
-{% endfor %}
+  {% cycle '' '' '</div><div class="row">' %}
 
-</table>
+  {% endfor %}
+</div>
 {% endblock %}

@@ -11,6 +11,8 @@ from .forms import VariationInventoryFormSet
 from .mixins import StaffRequireMixin
 from .models import Product, Variation, Category
 
+import random
+
 
 class CategoryListView(ListView):
     model = Category
@@ -99,6 +101,13 @@ class ProductListView(ListView):
 class ProductDetailView(DetailView):
     model = Product
 
+    def get_context_data(self, *args, **kwargs):
+        context = super(
+            ProductDetailView, self).get_context_data(*args, **kwargs)
+        instance = self.get_object()
+        context['related'] = sorted(Product.objects.get_related(
+            instance)[:6], key=lambda x: random.random())
+        return context
 
 # def product_detail_view_func(request, id):
 #     product_instance = get_object_or_404(Product, id=id)
