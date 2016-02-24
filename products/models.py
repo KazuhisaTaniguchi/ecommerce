@@ -27,6 +27,9 @@ class Product(models.Model):
         max_digits=20,
     )
     active = models.BooleanField(default=True)
+    categories = models.ManyToManyField('Category', blank=True)
+    default = models.ForeignKey(
+        'Category', related_name='default_category', null=True, blank=True)
 
     objects = ProductManager()
 
@@ -45,7 +48,7 @@ class Variation(models.Model):
         max_digits=20,
     )
     sale_price = models.DecimalField(
-        decimal_places=2,
+        decimal_places=0,
         max_digits=20,
         null=True,
         blank=True,
@@ -91,3 +94,18 @@ class ProductImage(models.Model):
 
     def __unicode__(self):
         return self.product.title
+
+
+class Category(models.Model):
+    title = models.CharField(max_length=120)
+    slug = models.SlugField(unique=True)
+    description = models.TextField(null=True, blank=True)
+    active = models.BooleanField(default=True)
+    timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
+
+    def __unicode__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse(
+            'categories:category_detail', kwargs={'slug': self.slug})

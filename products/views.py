@@ -1,16 +1,38 @@
 # -*- coding: utf-8 -*-
 from django.contrib import messages
 from django.db.models import Q
+from django.http import Http404
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.shortcuts import redirect, get_object_or_404
 # from django.utils import timezone
 
 from .forms import VariationInventoryFormSet
-from .models import Product, Variation
+from .mixins import StaffRequireMixin
+from .models import Product, Variation, Category
 
 
-class VariationListView(ListView):
+class CategoryListView(ListView):
+    model = Category
+    queryset = Category.objects.all()
+    template_name = 'products/product_list.html'
+
+
+class CategoryDetailView(DetailView):
+    model = Category
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(
+            CategoryDetailView, self).get_context_data(*args, **kwargs)
+        obj = self.get_object()
+        product_set = obj.product_set.all()
+        default_products = obj.default_category.all()
+        products = (product_set | default_products).distinct()
+        context['products'] = products
+        return context
+
+
+class VariationListView(StaffRequireMixin, ListView):
     model = Variation
     queryset = Variation.objects.all()
 
@@ -22,8 +44,7 @@ class VariationListView(ListView):
         return context
 
     def get_queryset(self, *args, **kwargs):
-        print self.args
-        print self.kwargs
+
         product_pk = self.kwargs.get('pk')
         if product_pk:
             product = get_object_or_404(Product, pk=product_pk)

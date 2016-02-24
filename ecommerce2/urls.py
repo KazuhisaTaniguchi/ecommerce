@@ -23,6 +23,8 @@ urlpatterns = [
     url(r'^', include('newsletter.urls', namespace='newsletter')),
     url(r'^accounts/', include('registration.backends.default.urls')),
     url(r'^products/', include('products.urls', namespace='products')),
+    url(r'^categories/', include(
+        'products.urls_categories', namespace='categories')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # if settings.DEBUG:
 #     urlpatterns += static(

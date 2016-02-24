@@ -1,5 +1,28 @@
 {% extends "base.html" %}
 
+<script type="text/javascript">
+{% block jquery %}
+
+function setPrice(){
+  var price = $('.variation_select option:selected').attr('data-price');
+  $('#price').text(price);
+  var sale_price = $('.variation_select option:selected').attr('data-sale-price');
+  if (sale_price != "" && sale_price != "None" && sale_price != null ){
+    $("#price").html("<h3>" + sale_price + " <small class='og-price'>" + price  + "</small></h3>");
+  }else {
+    $('#price').html(price);
+  }
+}
+setPrice();
+
+$('.variation_select').change(function(){
+  setPrice();
+  // var img = $(".variation_select option:selected").attr("data-img")
+  // $("#changing_img").attr("src", img);
+})
+{% endblock %}
+</script>
+
 {% block content %}
 <div class="row">
   <div class="col-sm-8">
@@ -8,7 +31,7 @@
     {% if product.productimage_set.count > 0 %}
     <div>
     {% for img in product.productimage_set.all %}
-      <img class="img-responsive" src="{{ img.image.url }}" alt="" />
+      <img id='changing_img' class="img-responsive" src="{{ img.image.url }}" alt="" />
     {% endfor %}
     </div>
     {% endif %}
@@ -20,23 +43,42 @@
 
   <!-- Product Sidebar  -->
   <div class="col-sm-4">
-    <h3>{{ product.price }}</h3>
     {% if product.variation_set.count > 1 %}
-
-    <select class="form-control">
+    <h3 id="price">{{ product.variation_set.first.price }}</h3>
+    <select class="form-control variation_select">
     {% for vari_obj in product.variation_set.all %}
-      <option value="{{ vari_obj.id }}">
+      <!-- <option data-img="http://www.spirit1059.com/pics/Feeds/Articles/2015611/118317/Beach.jpg" data-price="{{ vari_obj.price }}" value="{{ vari_obj.id }}">{{ vari_obj }}</option> -->
+      <option data-sale-price="{{ vari_obj.sale_price }}" data-price="{{ vari_obj.price }}" value="{{ vari_obj.id }}">
       {{ vari_obj }}
       </option>
     {% endfor %}
     </select>
-
+    {% else %}
+    <h3 id="price">
+      {% if product.variation_set.first.sale_price %}
+        {{ product.variation_set.first.sale_price }}
+        <small class='og-price'>
+        {{ product.variation_set.first.price }}
+        </small>
+      {% else %}
+        {{ product.variation_set.first.price }}
+      {% endif %}
+    </h3>
     {% endif %}
     <br>
     <a href="#">Add to Cart</a>
     <br>
     <hr>
-
+    <p>
+      Share<br>
+      <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}">
+        <i class="fa fa-facebook-square fa-3x"></i>
+      </a>
+      <a href="#">
+        <i class="fa fa-twitter-square fa-3x"></i></a>
+      </p>
+    </p>
+    <hr>
     <h4>Related Products</h4>
 
   </div>
