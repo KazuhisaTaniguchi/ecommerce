@@ -5,3 +5,7 @@
   color: red;
   text-decoration: line-through;
 }
+.navbar-cart-custom{
+  font-size: 18px;
+  vertical-align: middle;
+}

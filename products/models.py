@@ -77,7 +77,7 @@ class Variation(models.Model):
     inventory = models.IntegerField(blank=True, null=True)
 
     def __unicode__(self):
-        return self.title + '-' + self.product.title
+        return self.title
 
     def get_price(self):
         if self.sale_price is not None:

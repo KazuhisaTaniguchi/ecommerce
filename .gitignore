@@ -75,3 +75,6 @@ newsletter/migrations/*
 
 products/migrations/*
 !products/migrations/__init__.py
+
+carts/migrations/*
+!carts/migrations/__init__.py
