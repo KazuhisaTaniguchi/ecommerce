@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.conf.urls.static import static
 from django.conf import settings
 
+from carts.views import CartView
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('newsletter.urls', namespace='newsletter')),
@@ -25,6 +27,7 @@ urlpatterns = [
     url(r'^products/', include('products.urls', namespace='products')),
     url(r'^categories/', include(
         'products.urls_categories', namespace='categories')),
+    url(r'^cart/$', CartView.as_view(), name='cart'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # if settings.DEBUG:
 #     urlpatterns += static(

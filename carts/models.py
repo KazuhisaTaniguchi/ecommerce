@@ -7,8 +7,8 @@ from products.models import Variation
 
 
 class CartItem(models.Model):
-    cart = models.ForeignKey('Cart')
-    item = models.ForeignKey(Variation)
+    cart = models.ForeignKey("Cart", on_delete=models.CASCADE)
+    item = models.ForeignKey(Variation, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
     def __unicode__(self):
