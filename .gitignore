@@ -59,7 +59,7 @@ target/
 # virtual env
 .venv/
 
-*.sqlite3
+#*.sqlite3
 
 dump.rdb
 
@@ -70,11 +70,5 @@ celerybeat-schedule
 node_modules/
 .sass-cache/
 
-newsletter/migrations/*
-!newsletter/migrations/__init__.py
-
-products/migrations/*
-!products/migrations/__init__.py
-
-carts/migrations/*
-!carts/migrations/__init__.py
+*/migrations/*
+!*/migrations/__init__.py
