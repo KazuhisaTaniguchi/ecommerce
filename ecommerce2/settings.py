@@ -49,7 +49,9 @@ INSTALLED_APPS = [
     'crispy_forms',
     'registration',
     # myApps
+    'carts',
     'newsletter',
+    'products',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -145,7 +147,7 @@ STATICFILES_DIRS = [
 STATIC_ROOT = 'staticfiles'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # CRISPY
 CRISPY_TEMPLATE_PACK = 'bootstrap3'

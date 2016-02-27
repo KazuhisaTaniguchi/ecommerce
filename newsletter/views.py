@@ -6,15 +6,25 @@ from .forms import (
     SingUpForm,
     ContactForm,
 )
+from products.models import ProductFeatured, Product
 from .models import SingUp
 
 
 def home(request):
     title = 'Sign Up Now'
+    featured_image = ProductFeatured.objects.filter(
+        active=True).order_by('?').first()
+
+    products = Product.objects.all().order_by('?')[:6]
+    products2 = Product.objects.all().order_by('?')[:6]
+
     form = SingUpForm(request.POST or None)
     context = {
         'title': title,
         'form': form,
+        'featured_image': featured_image,
+        'products': products,
+        'products2': products2,
     }
 
     if form.is_valid():
@@ -31,14 +41,6 @@ def home(request):
             'title': 'Thank you'
         }
 
-    if request.user.is_authenticated() and request.user.is_staff:
-        queryset = SingUp.objects.all().order_by('-timestamp')
-        # 特定の文字列が含まれている物を探す
-        # queryset = SingUp.objects.all().order_by(
-        #     '-timestamp').filter(full_name__icontains='2')
-        context = {
-            'queryset': queryset,
-        }
     return render(request, 'newsletter/home.html', context)
 
 
