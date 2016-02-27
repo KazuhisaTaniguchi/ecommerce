@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from decimal import Decimal
 from django.conf import settings
+from django.db.models.signals import pre_save
 from django.db import models
 
 from products.models import Variation
@@ -10,9 +12,23 @@ class CartItem(models.Model):
     cart = models.ForeignKey("Cart", on_delete=models.CASCADE)
     item = models.ForeignKey(Variation, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
+    line_item_total = models.DecimalField(max_digits=20, decimal_places=0)
 
     def __unicode__(self):
         return self.item.title
+
+    def remove(self):
+        return self.item.remove_from_cart()
+
+
+def cart_item_pre_save_receiver(sender, instance, *args, **kwargs):
+    qty = instance.quantity
+    if qty >= 1:
+        price = instance.item.get_price()
+        line_item_total = Decimal(qty) * Decimal(price)
+        instance.line_item_total = line_item_total
+
+pre_save.connect(cart_item_pre_save_receiver, sender=CartItem)
 
 
 class Cart(models.Model):

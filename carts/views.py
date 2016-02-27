@@ -31,7 +31,6 @@ class CartView(SingleObjectMixin, View):
 
     def get(self, request, *args, **kwargs):
         cart = self.get_object()
-
         item_id = request.GET.get('item')
         delete_item = request.GET.get('delete')
         if item_id:
