@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from django.http import Http404
+from django.core.urlresolvers import reverse
+from django.http import Http404, JsonResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
 from django.views.generic.base import View
@@ -32,8 +33,12 @@ class CartView(SingleObjectMixin, View):
 
     def get(self, request, *args, **kwargs):
         cart = self.get_object()
+
         item_id = request.GET.get('item')
-        delete_item = request.GET.get('delete')
+        delete_item = request.GET.get('delete', False)
+        flash_message = ''
+        item_added = False
+
         if item_id:
             item_instance = get_object_or_404(Variation, id=item_id)
             qty = request.GET.get('qty', 1)
@@ -42,13 +47,46 @@ class CartView(SingleObjectMixin, View):
                     delete_item = True
             except:
                 raise Http404
-            cart_item = CartItem.objects.get_or_create(
-                cart=cart, item=item_instance)[0]
+            cart_item, created = CartItem.objects.get_or_create(
+                cart=cart, item=item_instance)
+
+            if created:
+                flash_message = 'カートに追加されました｡'
+                item_added = True
+
             if delete_item:
+                flash_message = 'カートから移動しました｡'
                 cart_item.delete()
             else:
+                if not created:
+                    flash_message = '商品数を変更しました｡'
+
                 cart_item.quantity = qty
                 cart_item.save()
+
+            if not request.is_ajax():
+                return HttpResponseRedirect(reverse('cart'))
+
+        if request.is_ajax():
+            try:
+                total = cart_item.line_item_total
+            except:
+                total = None
+
+            try:
+                subtotal = cart_item.cart.sub_total
+            except:
+                subtotal = None
+
+            ajax_data = {
+                'deleted': delete_item,
+                'item_added': item_added,
+                'line_total': total,
+                'subtotal': subtotal,
+                'flash_message': flash_message,
+            }
+            return JsonResponse(ajax_data)
+
         context = {
             'object': self.get_object()
         }

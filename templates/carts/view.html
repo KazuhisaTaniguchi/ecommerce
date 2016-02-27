@@ -3,7 +3,43 @@
 <script type="text/javascript">
   {% block jquery %}
   $('.item-qty').change(function(){
-    $(this).next('.btn-update').fadeIn();
+    // $(this).next('.btn-update').fadeIn();
+    // event.preventDefault();
+    var item = $(this).prev("input[type='hidden']").val();
+    var qty = $(this).val()
+    var data = {
+      item: item,
+      qty: qty,
+    }
+
+    $.ajax({
+      type: 'GET',
+      url: {% url 'cart' %},
+      data: data,
+      success: function(data){
+        $('#jquery-message').text('Added ' + data.item_added + ' Deleted ' + data.deleted);
+
+        if (data.deleted){
+          $('#item-' + item).fadeOut();
+        }else{
+          $('#item-line-total-' + item).text(data.line_total);
+          $('#subtotal').text(data.subtotal);
+        }
+        var message = ""
+        if (data.item_added) {
+          message = "New item added"
+        } else if (data.deleted){
+          message = "Item removed"
+        } else {
+          message = "Item updated"
+        }
+        showFlashMessage(message);
+      },
+      error: function(response, error){
+        $('#add-form').submit();
+      }
+    })
+
   });
   {% endblock %}
 </script>
@@ -12,28 +48,28 @@
 {% block content %}
 <table class="table">
 {% for item in object.cartitem_set.all %}
-  <tr>
-    <form class="" action="." method="GET">
-      <td>
-        {{ item.item.get_title }}
-      </td>
-      <input type="hidden" name="item" value="{{ item.item.id }}">
-      <td>
+  <tr id='item-{{ item.item.id }}'>
+    <td>
+      {{ item.item.get_title }}
+    </td>
+    <td>
+      <form class="" action="." method="GET">
+        <input type="hidden" name="item" value="{{ item.item.id }}">
         <input class='item-qty' type="number" name="qty" value="{{ item.quantity }}">
         <input style='display: none;' class='btn-update btn btn-link' type="submit" value="変更">
-      </td>
-      <td>
-        {{ item.line_item_total }}
-      </td>
-      <td class="text-right">
-        <a href="{{ item.remove }}">X</a>
-      </td>
-    </form>
+      </form>
+    </td>
+    <td id='item-line-total-{{ item.item.id }}'>
+      {{ item.line_item_total }}
+    </td>
+    <td class="text-right">
+      <a href="{{ item.remove }}">X</a>
+    </td>
   </tr>
 {% endfor %}
 
   <tr>
-    <td colspan="4" class="text-right">
+    <td id='subtotal' colspan="4" class="text-right">
       Subtotal: {{ object.sub_total }}
     </td>
   </tr>
