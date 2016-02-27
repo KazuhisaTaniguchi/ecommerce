@@ -17,8 +17,9 @@ class CartView(SingleObjectMixin, View):
         # 300 is 5 minutes
         self.request.session.set_expiry(0)
         cart_id = self.request.session.get("cart_id")
-        if not cart_id:
-            cart = Cart()
+        if cart_id is None:
+            # cart = Cart()
+            cart = Cart.objects.create()
             cart.save()
             cart_id = cart.id
             self.request.session['cart_id'] = cart_id
