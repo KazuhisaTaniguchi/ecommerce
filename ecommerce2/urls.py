@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.conf.urls.static import static
 from django.conf import settings
 
-from carts.views import CartView
+from carts.views import CartView, ItemCountView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^categories/', include(
         'products.urls_categories', namespace='categories')),
     url(r'^cart/$', CartView.as_view(), name='cart'),
+    url(r'^cart/count/$', ItemCountView.as_view(), name='item_count'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # if settings.DEBUG:
 #     urlpatterns += static(

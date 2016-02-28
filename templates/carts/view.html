@@ -3,8 +3,6 @@
 <script type="text/javascript">
   {% block jquery %}
   $('.item-qty').change(function(){
-    // $(this).next('.btn-update').fadeIn();
-    // event.preventDefault();
     var item = $(this).prev("input[type='hidden']").val();
     var qty = $(this).val()
     var data = {
@@ -21,19 +19,28 @@
 
         if (data.deleted){
           $('#item-' + item).fadeOut();
+          $('#subtotal').text('カートの合計: ' + data.subtotal);
         }else{
           $('#item-line-total-' + item).text(data.line_total);
-          $('#subtotal').text(data.subtotal);
+          $('#subtotal').text('カートの合計: ' + data.subtotal);
         }
+
+        if(data.total_items == 0){
+          $('.table').fadeOut();
+          var template = "{% include 'carts/empty_cart.html' %}"
+          $('.main-content').html(template);
+        }
+
         var message = ""
         if (data.item_added) {
-          message = "New item added"
+          message = "商品が追加されました｡"
         } else if (data.deleted){
-          message = "Item removed"
+          message = "商品を戻しました｡"
         } else {
-          message = "Item updated"
+          message = "商品数を変更しました｡"
         }
         showFlashMessage(message);
+        updateCartItemCount();
       },
       error: function(response, error){
         $('#add-form').submit();
@@ -46,33 +53,44 @@
 
 
 {% block content %}
-<table class="table">
-{% for item in object.cartitem_set.all %}
-  <tr id='item-{{ item.item.id }}'>
-    <td>
-      {{ item.item.get_title }}
-    </td>
-    <td>
-      <form class="" action="." method="GET">
-        <input type="hidden" name="item" value="{{ item.item.id }}">
-        <input class='item-qty' type="number" name="qty" value="{{ item.quantity }}">
-        <input style='display: none;' class='btn-update btn btn-link' type="submit" value="変更">
-      </form>
-    </td>
-    <td id='item-line-total-{{ item.item.id }}'>
-      {{ item.line_item_total }}
-    </td>
-    <td class="text-right">
-      <a href="{{ item.remove }}">X</a>
-    </td>
-  </tr>
-{% endfor %}
 
-  <tr>
-    <td id='subtotal' colspan="4" class="text-right">
-      Subtotal: {{ object.sub_total }}
-    </td>
-  </tr>
-</table>
+<div class="row main-content">
+{% if object.cartitem_set.count < 1 %}
+
+  {% include 'carts/empty_cart.html' %}
+
+{% else %}
+
+  <table class="table">
+  {% for item in object.cartitem_set.all %}
+    <tr id='item-{{ item.item.id }}'>
+      <td>
+        {{ item.item.get_title }}
+      </td>
+      <td>
+        <form class="" action="." method="GET">
+          <input type="hidden" name="item" value="{{ item.item.id }}">
+          <input class='item-qty' type="number" name="qty" value="{{ item.quantity }}">
+          <input style='display: none;' class='btn-update btn btn-link' type="submit" value="変更">
+        </form>
+      </td>
+      <td id='item-line-total-{{ item.item.id }}'>
+        {{ item.line_item_total }}
+      </td>
+      <td class="text-right">
+        <a href="{{ item.remove }}">X</a>
+      </td>
+    </tr>
+  {% endfor %}
+
+    <tr>
+      <td id='subtotal' colspan="4" class="text-right">
+        カートの合計: {{ object.sub_total }}
+      </td>
+    </tr>
+  </table>
+
+{% endif %}
+</div><!-- row main-content END -->
 
 {% endblock %}
