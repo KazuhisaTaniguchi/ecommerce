@@ -134,6 +134,9 @@ USE_L10N = True
 USE_TZ = False
 
 
+# Tax
+TAX_PERCENTAGE = 0.08
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 

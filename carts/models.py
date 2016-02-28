@@ -51,7 +51,8 @@ class Cart(models.Model):
     sub_total = models.DecimalField(
         max_digits=20, decimal_places=0, default=10)
     tax_total = models.DecimalField(
-        max_digits=20, decimal_places=2, default=10)
+        max_digits=20, decimal_places=0, default=10)
+
     total = models.DecimalField(
         max_digits=20, decimal_places=0, default=10)
 
@@ -69,3 +70,14 @@ class Cart(models.Model):
 
         self.sub_total = sub_total
         self.save()
+
+
+def do_tax_and_total_receiver(sender, instance, *args, **kwargs):
+    sub_total = instance.sub_total
+    tax_total = round(sub_total * Decimal(settings.TAX_PERCENTAGE))
+    tax_total = int(tax_total)
+    total = sub_total + tax_total
+    instance.tax_total = tax_total
+    instance.total = total
+
+pre_save.connect(do_tax_and_total_receiver, sender=Cart)

@@ -19,10 +19,14 @@
 
         if (data.deleted){
           $('#item-' + item).fadeOut();
-          $('#subtotal').text('カートの合計: ' + data.subtotal);
+          $('#subtotal').text(data.subtotal);
+          $('#taxtotal').text(data.tax_total);
+          $('#carttotal').text(data.cart_total);
         }else{
           $('#item-line-total-' + item).text(data.line_total);
-          $('#subtotal').text('カートの合計: ' + data.subtotal);
+          $('#subtotal').text(data.subtotal);
+          $('#taxtotal').text(data.tax_total);
+          $('#carttotal').text(data.cart_total);
         }
 
         if(data.total_items == 0){
@@ -84,10 +88,21 @@
   {% endfor %}
 
     <tr>
-      <td id='subtotal' colspan="4" class="text-right">
-        カートの合計: {{ object.sub_total }}
+      <td colspan="4" class="text-right">
+        商品の小合計: <span id="subtotal">{{ object.sub_total }}</span>円
       </td>
     </tr>
+    <tr>
+      <td colspan="4" class="text-right">
+        消費税の合計: <span id='taxtotal'>{{ object.tax_total }}</span>円
+      </td>
+    </tr>
+    <tr>
+      <td colspan="4" class="text-right">
+        合計: <span id='carttotal'>{{ object.total }}</span>円
+      </td>
+    </tr>
+
   </table>
 
 {% endif %}

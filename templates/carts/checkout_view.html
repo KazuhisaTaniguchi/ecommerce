@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block jquery %}
+
+{% endblock %}
+
+{% block content %}
+
+{% if not user_can_continue %}
+<div class="col-sm-6">
+  <p class="lead">Continue as Guest</p>
+</div>
+<div class="col-sm-6">
+  <p class="lead">Login to Continue</p>
+  <form action="{% url 'auth_login' %}" method="post">
+    {% csrf_token %}
+    {{ login_form|crispy }}
+
+    <input type="hidden" name="next" value="{{ next_url }}">
+    <input class="btn btn-success" type="submit" value="ログイン">
+  </form>
+
+  <div class='text-center'>
+    <p>{% trans "Forgot password" %}? <a href="{% url 'auth_password_reset' %}">{% trans "Reset it" %}</a>!</p>
+    <p>{% trans "Not member" %}? <a href="{% url 'registration_register' %}">{% trans "Register" %}</a>!</p>
+  </div>
+</div>
+{% else %}
+
+
+{% endif %}
+
+{% endblock %}
