@@ -6,9 +6,13 @@ from django.shortcuts import get_object_or_404, render, redirect
 
 from django.views.generic.base import View
 from django.views.generic.detail import SingleObjectMixin, DetailView
+from django.views.generic.edit import FormMixin
+
+from orders.forms import GuestCheckoutForm
 
 from products.models import Variation
 from .models import Cart, CartItem
+from orders.models import UserCheckout
 
 
 class ItemCountView(View):
@@ -134,9 +138,10 @@ class CartView(SingleObjectMixin, View):
         return render(request, template, context)
 
 
-class CheckoutView(DetailView):
+class CheckoutView(FormMixin, DetailView):
     model = Cart
     template_name = 'carts/checkout_view.html'
+    form_class = GuestCheckoutForm
 
     def get_object(self, *args, **kwargs):
 
@@ -149,11 +154,38 @@ class CheckoutView(DetailView):
     def get_context_data(self, *args, **kwargs):
         context = super(CheckoutView, self).get_context_data(*args, **kwargs)
         user_can_continue = False
-        if not self.request.user.is_authenticated():
+
+        user_checkout_id = self.request.session.get('user_checkout_id')
+
+        if (not self.request.user.is_authenticated() or
+                user_checkout_id is None):
+
             context['login_form'] = AuthenticationForm()
             context['next_url'] = self.request.build_absolute_uri()
-        elif self.request.user.is_authenticated():
-            user_can_continue = True
+        elif (self.request.user.is_authenticated() or
+                user_checkout_id is not None):
 
+            user_can_continue = True
+        else:
+            pass
+
+        context['form'] = self.get_form()
         context['user_can_continue'] = user_can_continue
         return context
+
+    def post(self, request, *args, **kwargs):
+        # assign the object to the view
+        self.object = self.get_object()
+        form = self.get_form()
+        if form.is_valid():
+            email = form.cleaned_data.get("email")
+            user_checkout, created = UserCheckout.objects.get_or_create(
+                email=email)
+            request.session['user_checkout_id'] = user_checkout.id
+            print user_checkout
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def get_success_url(self):
+        return reverse("checkout")

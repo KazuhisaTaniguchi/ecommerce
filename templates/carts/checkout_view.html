@@ -8,13 +8,19 @@
 
 {% block content %}
 
+
 {% if not user_can_continue %}
 <div class="col-sm-6">
   <p class="lead">Continue as Guest</p>
+  <form class="" action="" method="POST">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input class='btn btn-success' type="submit" value="ゲストで続ける">
+  </form>
 </div>
 <div class="col-sm-6">
   <p class="lead">Login to Continue</p>
-  <form action="{% url 'auth_login' %}" method="post">
+  <form action="{% url 'auth_login' %}" method="POST">
     {% csrf_token %}
     {{ login_form|crispy }}
 
