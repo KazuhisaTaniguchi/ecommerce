@@ -15,6 +15,7 @@ from products.models import Variation
 class CartItem(models.Model):
     cart = models.ForeignKey("Cart", on_delete=models.CASCADE)
     item = models.ForeignKey(Variation, on_delete=models.CASCADE)
+
     quantity = models.PositiveIntegerField(default=1)
     line_item_total = models.DecimalField(max_digits=20, decimal_places=0)
 
