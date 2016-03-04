@@ -85,9 +85,16 @@
     <b>発送先</b><br>
     {{ order.shipping_address.get_address }}
   </p>
+  <br>
   <p>
     <a href="{% url 'order_address' %}">住所を変更する</a>
   </p>
+
+  <form class="" action="{% url 'checkout_final' %}" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="payment_token" value="ABC">
+    <button type="submit">決済をする</button>
+  </form>
 </div>
 
 {% endif %}

@@ -22,6 +22,7 @@ from carts.views import (
     CartView,
     ItemCountView,
     CheckoutView,
+    CheckoutFinalView,
 )
 from orders.views import AddressSelectFormView, UserAddressCreateView
 
@@ -39,6 +40,9 @@ urlpatterns = [
         AddressSelectFormView.as_view(), name='order_address'),
     url(r'^checkout/address/add/$',
         UserAddressCreateView.as_view(), name='user_address_create'),
+    url(r'^checkout/final/$',
+        CheckoutFinalView.as_view(), name='checkout_final'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # if settings.DEBUG:
 #     urlpatterns += static(
