@@ -34,6 +34,17 @@ class UserAddress(models.Model):
     def __unicode__(self):
         return self.state + self.address1
 
+    def get_address(self):
+        if self.address2 is None:
+            full_address = self.address1
+        else:
+            full_address = self.address1 + ' ' + self.address2
+        return '%s %s %s' % (
+            self.zipcode,
+            self.state,
+            full_address,
+        )
+
 
 class Order(models.Model):
     cart = models.ForeignKey(Cart)

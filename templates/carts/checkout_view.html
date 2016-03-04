@@ -36,7 +36,7 @@
 {% else %}
 
 <div class="col-sm-4 col-sm-offset-4">
-  <p class="lead">Your Order</p>
+  <p class="lead">カートの中身</p>
   <table class="table">
     <tr>
 
@@ -75,6 +75,19 @@
       </td>
     </tr>
   </table>
+</div>
+<div class="col-sm-4 col-sm-offset-4">
+  <p>
+    <b>請求先</b><br>
+    {{ order.billing_address.get_address }}
+  </p>
+  <p>
+    <b>発送先</b><br>
+    {{ order.shipping_address.get_address }}
+  </p>
+  <p>
+    <a href="{% url 'order_address' %}">住所を変更する</a>
+  </p>
 </div>
 
 {% endif %}
