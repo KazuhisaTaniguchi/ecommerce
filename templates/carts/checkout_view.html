@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block jquery %}
+
+{% endblock %}
+
+{% block content %}
+
+
+{% if not user_can_continue %}
+<div class="col-sm-6">
+  <p class="lead">Continue as Guest</p>
+  <form class="" action="" method="POST">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input class='btn btn-success' type="submit" value="ゲストで続ける">
+  </form>
+</div>
+<div class="col-sm-6">
+  <p class="lead">Login to Continue</p>
+  <form action="{% url 'auth_login' %}" method="POST">
+    {% csrf_token %}
+    {{ login_form|crispy }}
+
+    <input type="hidden" name="next" value="{{ next_url }}">
+    <input class="btn btn-success" type="submit" value="ログイン">
+  </form>
+
+  <div class='text-center'>
+    <p>{% trans "Forgot password" %}? <a href="{% url 'auth_password_reset' %}">{% trans "Reset it" %}</a>!</p>
+    <p>{% trans "Not member" %}? <a href="{% url 'registration_register' %}">{% trans "Register" %}</a>!</p>
+  </div>
+</div>
+{% else %}
+
+<div class="col-sm-4 col-sm-offset-4">
+  {% include 'orders/order_summary_short.html' with order=order %}
+  <br>
+  <p>
+    <a href="{% url 'order_address' %}">住所を変更する</a>
+  </p>
+
+  <form class="" action="{% url 'checkout_final' %}" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="payment_token" value="ABC">
+    <button type="submit">決済をする</button>
+  </form>
+</div>
+
+{% endif %}
+
+{% endblock %}

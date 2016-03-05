@@ -1,6 +1,8 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 
-<script type="text/javascript">
+
+<script>
 {% block jquery %}
 
 function setPrice(){
@@ -17,13 +19,32 @@ setPrice();
 
 $('.variation_select').change(function(){
   setPrice();
-  // var img = $(".variation_select option:selected").attr("data-img")
-  // $("#changing_img").attr("src", img);
+})
+
+$('#submit-btn').click(function(event){
+  event.preventDefault();
+  var formData = $('#add-form').serialize();
+
+  $.ajax({
+    type: 'GET',
+    url: {% url 'cart' %},
+    data: formData,
+    success: function(data){
+      console.log('aaaa');
+      showFlashMessage(data.flash_message);
+      updateCartItemCount();
+    },
+    error: function(response, error){
+      $('#add-form').submit();
+    }
+  })
 })
 {% endblock %}
 </script>
 
 {% block content %}
+
+
 <div class="row">
   <div class="col-sm-8">
     <h2>{{ product.title }}</h2>
@@ -44,7 +65,12 @@ $('.variation_select').change(function(){
   <!-- Product Sidebar  -->
   <div class="col-sm-4">
 
-    <form method='GET' action="{% url 'cart' %}">
+    <form id='add-form' method='GET' action="{% url 'cart' %}">
+
+      <p id='jquery-message' class='lead'>
+
+      </p>
+
       {% if product.variation_set.count > 1 %}
       <h3 id="price">{{ product.variation_set.first.price }}</h3>
       <select name='item' class="form-control variation_select">
@@ -72,7 +98,7 @@ $('.variation_select').change(function(){
       <br>
       <input class='form-control' type='number' name='qty' value='1'>
       <br>
-      <input type="submit" class="btn btn-default" value="カートに入れる">
+      <input id='submit-btn' type="submit" class="btn btn-default" value="カートに入れる">
     </form>
 
     <br>
