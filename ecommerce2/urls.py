@@ -24,7 +24,12 @@ from carts.views import (
     CheckoutView,
     CheckoutFinalView,
 )
-from orders.views import AddressSelectFormView, UserAddressCreateView
+from orders.views import (
+    AddressSelectFormView,
+    UserAddressCreateView,
+    OrderList,
+    OrderDetail,
+)
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -33,6 +38,9 @@ urlpatterns = [
     url(r'^products/', include('products.urls', namespace='products')),
     url(r'^categories/', include(
         'products.urls_categories', namespace='categories')),
+    url(r'^orders/$', OrderList.as_view(), name='orders'),
+    url(r'^orders/(?P<pk>[0-9]+)/$',
+        OrderDetail.as_view(), name='order_detail'),
     url(r'^cart/$', CartView.as_view(), name='cart'),
     url(r'^cart/count/$', ItemCountView.as_view(), name='item_count'),
     url(r'^checkout/$', CheckoutView.as_view(), name='checkout'),

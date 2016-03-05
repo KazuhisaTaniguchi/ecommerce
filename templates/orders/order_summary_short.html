@@ -1,0 +1,49 @@
+<p class="lead">カートの中身</p>
+<table class="table">
+  <tr>
+
+    <td>
+      商品名:<br>
+      {% for item in order.cart.cartitem_set.all %}
+      <b>
+      {{ item.item.get_title }} ✕ {{ item.quantity }}
+      </b><br>
+      {% endfor %}
+    </td>
+  </tr>
+  <tr>
+    <td>
+      カートの小計: {{ order.cart.sub_total }}
+    </td>
+  </tr>
+  <tr>
+    <td>
+      消費税: {{ order.cart.tax_total }}
+    </td>
+  </tr>
+  <tr>
+    <td>
+      カートの合計: {{ order.cart.total }}
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Shipping: {{ order.shipping_total_price }}
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Total: {{ order.order_total }}
+    </td>
+  </tr>
+</table>
+</div>
+<div class="col-sm-4 col-sm-offset-4">
+<p>
+  <b>請求先</b><br>
+  {{ order.billing_address.get_address }}
+</p>
+<p>
+  <b>発送先</b><br>
+  {{ order.shipping_address.get_address }}
+</p>

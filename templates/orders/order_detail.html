@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% include 'orders/order_summary_short.html' with order=order %}
+
+<p><b>
+  詳細をプリントアウトして下さい｡
+</b></p>
+
+{% endblock %}<!--content END-->

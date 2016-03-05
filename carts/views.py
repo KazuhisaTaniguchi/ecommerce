@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.urlresolvers import reverse
 from django.http import Http404, JsonResponse, HttpResponseRedirect
@@ -221,7 +222,7 @@ class CheckoutView(CartOrderMixin, FormMixin, DetailView):
                     new_order.shipping_address is None):
 
                     return redirect('order_address')
-            # new_order.cart = cart
+
             new_order.user = user_checkout
 
             new_order.save()
@@ -235,9 +236,10 @@ class CheckoutFinalView(CartOrderMixin, View):
         order = self.get_order()
         if request.POST.get('payment_token') == 'ABC':
             order.mark_completed()
+            messages.success(request, 'ご注文ありがとうございます。')
             del request.session['cart_id']
             del request.session['order_id']
-        return redirect('checkout')
+        return redirect('order_detail', pk=order.pk)
 
     def get(self, request, *args, **kwargs):
         return redirect('checkout')

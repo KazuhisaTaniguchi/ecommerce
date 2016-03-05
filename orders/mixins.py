@@ -1,6 +1,15 @@
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from carts.models import Cart
 from .models import Order
 # from django.shortcuts import redirect
+
+
+class LoginRequireMixin(object):
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(LoginRequireMixin, self).dispatch(
+            request, *args, **kwargs)
 
 
 class CartOrderMixin(object):
