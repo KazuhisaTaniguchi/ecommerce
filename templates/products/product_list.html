@@ -1,8 +1,26 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block content %}
-<h1>All Products <small><a href="{% url 'categories:categories' %}">Categories</a></small></h1>
+<div class="col-sm-2">
+  <form class="" action="{% url 'products:products' %}" method="GET">
+    {{ filter_form | crispy }}
 
-{% include 'products/products.html' with object_list=object_list %}
+    <input type="hidden" name=q value={{ request.GET.q }}>
 
+    <input class='btn btn-default' type="submit" value="search">
+  </form>
+  <a href="{% url 'products:products' %}">Crear Filters</a>
+</div>
+<div class="col-sm-10">
+  <h1>All Products <small><a href="{% url 'categories:categories' %}">Categories</a></small></h1>
+
+  {% if object_list.count == 0 %}
+  Nothing Found
+
+  {% else %}
+  {% include 'products/products.html' with object_list=object_list %}
+
+  {% endif %}
+</div>
 {% endblock %}
